@@ -1,0 +1,9 @@
+ejb\UserQuestionEntity.class
+ejb\UserEntityFacade.class
+ejb\UserQuestionEntity_.class
+ejb\QuestionEntity_.class
+ejb\QuestionEntityFacade.class
+ejb\NewMessage.class
+ejb\AbstractFacade.class
+ejb\UserQuestionEntityFacade.class
+ejb\QuestionEntity.class
