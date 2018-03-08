@@ -55,7 +55,7 @@ public class Circle extends Shape {
     }
 
     public double getAnswer(CircleQuestions question) {
-        double ret = 0;
+        double ret = 0.0;
         switch (question) {
             case AREA:
                 ret = Math.PI * radius * radius;

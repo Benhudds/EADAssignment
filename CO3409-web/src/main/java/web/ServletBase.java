@@ -32,7 +32,6 @@ public class ServletBase {
                 out.println("<input type='password' name='" + params[i] + "'><br>");
                 out.println("</div>");
             } else if (params[i].equals(UserController.teacherParam)) {
-
                 out.println("<input type='checkbox' id='" + params[i] + "' value='" + params[i] + "' name='test'>" + UserController.teacherParam + "</br>");
             } else {
                 out.println("<div class='container'>");

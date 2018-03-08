@@ -24,7 +24,7 @@ public class CookieHelper {
         response.addCookie(loginCookie);
     }
 
-    public static void RevokeSession(HttpServletRequest request, HttpServletResponse response) {
+    public static void RevokeLoginCookie(HttpServletRequest request, HttpServletResponse response) {
         // Remove the cookie
         for (Cookie c : request.getCookies()) {
             if (c.getName().equals(USER_NAME_STRING)) {

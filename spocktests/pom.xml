@@ -65,6 +65,7 @@
                     <artifactId>CO3409-web</artifactId>
                 </exclusion>
             </exclusions>
+            <classifier>classes</classifier>
         </dependency>
     </dependencies>
     <properties>

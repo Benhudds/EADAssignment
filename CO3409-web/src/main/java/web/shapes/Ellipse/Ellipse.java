@@ -62,8 +62,8 @@ public class Ellipse extends Shape {
     public Ellipse(int[] params) {
         super(params[2], params[3]);
         super.name = name;
-        this.yradius = params[0];
-        this.xradius = params[1];
+        this.yradius = params[1];
+        this.xradius = params[0];
     }
 
     public double getAnswer(EllipseQuestions question) {

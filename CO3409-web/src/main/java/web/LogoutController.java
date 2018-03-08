@@ -27,7 +27,7 @@ public class LogoutController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        CookieHelper.RevokeSession(request, response);
+        CookieHelper.RevokeLoginCookie(request, response);
         response.sendRedirect(request.getContextPath() + "/home");
     }
 

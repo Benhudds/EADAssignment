@@ -24,7 +24,7 @@ public class Line extends Shape {
     
     @Override
     public int[] getParams() {
-        return ArrayUtils.join(new int[]{x2, y2}, super.getParams());
+        return ArrayUtils.join(new int[]{y2, x2}, super.getParams());
     }
     
     private int x2;
@@ -60,10 +60,10 @@ public class Line extends Shape {
     }
     
     public Line(int[] params) {
-        super(params[2], params[3]);
+        super(params[3], params[2]);
         super.name = name;
-        this.x2 = params[1];
-        this.y2 = params[0];
+        this.x2 = params[0];
+        this.y2 = params[1];
     }
 
     public double getAnswer(LineQuestions question) {
