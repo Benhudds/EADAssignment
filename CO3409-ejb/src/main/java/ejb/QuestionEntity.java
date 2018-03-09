@@ -11,7 +11,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import shapes.Shape;
 
+@XmlRootElement
 @Entity
 public class QuestionEntity implements Serializable {
 
@@ -22,11 +26,22 @@ public class QuestionEntity implements Serializable {
     
     private String question;
     private double answer;
+    private Shape shape;
 
+    public Shape getShape() {
+        return shape;
+    }
+
+    @XmlElement
+    public void setShape(Shape shape) {
+        this.shape = shape;
+    }
+    
     public String getQuestion() {
         return question;
     }
 
+    @XmlElement
     public void setQuestion(String question) {
         this.question = question;
     }
@@ -35,6 +50,7 @@ public class QuestionEntity implements Serializable {
         return answer;
     }
 
+    @XmlElement
     public void setAnswer(double answer) {
         this.answer = answer;
     }
@@ -43,6 +59,7 @@ public class QuestionEntity implements Serializable {
         return id;
     }
 
+    @XmlElement
     public void setId(Long id) {
         this.id = id;
     }

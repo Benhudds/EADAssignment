@@ -10,7 +10,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 @Entity
 public class UserEntity implements Serializable {
 
@@ -28,6 +31,7 @@ public class UserEntity implements Serializable {
         return firstName;
     }
 
+    @XmlElement
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -36,6 +40,7 @@ public class UserEntity implements Serializable {
         return lastName;
     }
 
+    @XmlElement
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -44,6 +49,7 @@ public class UserEntity implements Serializable {
         return userName;
     }
 
+    @XmlElement
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -52,6 +58,7 @@ public class UserEntity implements Serializable {
         return password;
     }
 
+    @XmlElement
     public void setPassword(String password) {
         this.password = password;
     }
@@ -60,6 +67,7 @@ public class UserEntity implements Serializable {
         return teacher;
     }
 
+    @XmlElement
     public void setTeacher(boolean teacher) {
         this.teacher = teacher;
     }
@@ -68,6 +76,7 @@ public class UserEntity implements Serializable {
         return id;
     }
 
+    @XmlElement
     public void setId(Long id) {
         this.id = id;
     }

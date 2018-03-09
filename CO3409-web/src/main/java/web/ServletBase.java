@@ -11,21 +11,26 @@ import web.helpers.LoginHelperBean;
 public class ServletBase {
 
     public static final String ACCEPT_HEADER = "Accept";
+    public static final int OK_CODE = 200;
+    public static final int CREATED_CODE = 201;
+    public static final int UNPROCESSABLE_CODE = 422;
+    public static final int SERVER_ERROR_CODE = 500;
 
-    private static void PrintFormStart(PrintWriter out, String action) {
-
+    private static void PrintPostFormStart(PrintWriter out, String action) {
         out.println("<form method='post', action='" + action + "'>");
+    }
+
+    private static void PrintGetFormStart(PrintWriter out, String action) {
+        out.println("<form method='get', action='" + action + "'>");
     }
 
     private static void PrintFormEnd(PrintWriter out, String btnText) {
         out.println("<input type='submit' name='btn' value='" + btnText + "'>");
         out.println("</form>");
-
     }
 
     private static void PrintInputs(PrintWriter out, String[] params) {
         for (int i = params.length - 1; i > -1; i--) {
-            //out.println("<p1>" + params[i] + ": </p1>");
             if (params[i].equals(LoginHelperBean.passwordParam)) {
                 out.println("<div class='container'>");
                 out.println("<p1>" + params[i] + ": </p1>");
@@ -53,16 +58,22 @@ public class ServletBase {
         }
     }
 
-    public static void PrintForm(PrintWriter out, String btnText, String action, String[] params) {
-        PrintFormStart(out, action);
+    public static void PrintPostForm(PrintWriter out, String btnText, String action, String[] params) {
+        PrintPostFormStart(out, action);
         PrintInputs(out, params);
         PrintFormEnd(out, btnText);
     }
 
-    public static void PrintForm(PrintWriter out, String btnText, String action, String[] params, String[] hiddenParams, String[] hiddenParamValues) {
-        PrintFormStart(out, action);
+    public static void PrintPostForm(PrintWriter out, String btnText, String action, String[] params, String[] hiddenParams, String[] hiddenParamValues) {
+        PrintPostFormStart(out, action);
         PrintInputs(out, params);
         PrintHiddenInputs(out, hiddenParams, hiddenParamValues);
+        PrintFormEnd(out, btnText);
+    }
+
+    public static void PrintGetForm(PrintWriter out, String btnText, String action, String[] params) {
+        PrintGetFormStart(out, action);
+        PrintInputs(out, params);
         PrintFormEnd(out, btnText);
     }
 

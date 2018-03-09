@@ -5,24 +5,33 @@
  */
 package web.questions;
 
+import ejb.QuestionEntity;
+import imagehelpers.ImageHelper;
+import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.concurrent.ThreadLocalRandom;
-import web.shapes.Circle.Circle;
-import web.shapes.Circle.CircleQuestions;
-import web.shapes.Ellipse.Ellipse;
-import web.shapes.Ellipse.EllipseQuestions;
-import web.shapes.ImageHelper;
-import web.shapes.Line.Line;
-import web.shapes.Line.LineQuestions;
-import web.shapes.Shape;
-import web.shapes.Square.Square;
-import web.shapes.Square.SquareQuestions;
-import web.shapes.Triangle.Triangle;
-import web.shapes.Triangle.TriangleQuestions;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+import questions.CircleQuestions;
+import questions.EllipseQuestions;
+import questions.LineQuestions;
+import questions.SquareQuestions;
+import questions.TriangleQuestions;
+import shapes.Circle;
+import shapes.Ellipse;
+import shapes.Line;
+import shapes.Shape;
+import shapes.Square;
+import shapes.Triangle;
 
-public class Question {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Question implements Serializable {
 
+    @XmlElementRef
     private Shape shape;
     private String question;
     private double answer;
@@ -83,9 +92,9 @@ public class Question {
         return getNewRandom(0, max);
     }
 
-    public static Question generateQuestion() {
+    public static QuestionEntity generateQuestion() {
         int ran = getNewRandom(5);
-        Question returnQuestion = new Question();
+        QuestionEntity returnQuestion = new QuestionEntity();
         String question = "Calculate the ";
         // No questions for points as they would make no sense.
         switch (ran) {

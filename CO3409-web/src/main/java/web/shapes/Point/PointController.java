@@ -5,6 +5,8 @@
  */
 package web.shapes.Point;
 
+import imagehelpers.PointHelper;
+import shapes.Point;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.imageio.ImageIO;
@@ -15,9 +17,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import web.helpers.LoginHelperBean;
-import web.shapes.ImageHelper;
+import imagehelpers.ImageHelper;
 import web.shapes.ShapeServletBase;
-import web.shapes.Shape;
+import shapes.Shape;
 import web.shapes.ShapeParams;
 
 @WebServlet(name = "PointController", urlPatterns = {"/draw/point"})
@@ -43,7 +45,7 @@ public class PointController extends HttpServlet {
             case "image/webp,image/apng,image/*,*/*;q=0.8":
                 ImageHelper h = null;
                 try {
-                    ShapeParams shapeParams = ShapeServletBase.validateShape(request, response, Shape.class);
+                    ShapeParams shapeParams = ShapeServletBase.validateShape(request, response, Point.class);
                     if (shapeParams.isValid()) {
                         h = new PointHelper();
                         ((PointHelper) h).Draw((Shape) shapeParams.getShape());
@@ -64,7 +66,7 @@ public class PointController extends HttpServlet {
                 }
                 break;
             default:
-                ShapeServletBase.processHTMLRequest(request, response, new ShapeParams().setNewShape(new Shape()), false, loginHelper.ValidateRequest(request), loginHelper.ValidateTeacher(request));
+                ShapeServletBase.processHTMLRequest(request, response, new ShapeParams().setNewShape(new Point()), false, loginHelper.ValidateRequest(request), loginHelper.ValidateTeacher(request));
                 break;
         }
 
@@ -81,7 +83,7 @@ public class PointController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ShapeParams shapeParams = ShapeServletBase.validateShape(request, response, Shape.class);
+        ShapeParams shapeParams = ShapeServletBase.validateShape(request, response, Point.class);
         ShapeServletBase.doPost(request, response, shapeParams, loginHelper.ValidateRequest(request), loginHelper.ValidateTeacher(request));
 
     }

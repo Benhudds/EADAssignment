@@ -25,7 +25,6 @@ class TestCircle extends spock.lang.Specification {
         circle.setX(0)
         circle.setX(0)
         circle.radius << (0..400)
-        System.out.println(circle.radius)
         when:
         double ans = circle.getAnswer(CircleQuestions.AREA)
         then:

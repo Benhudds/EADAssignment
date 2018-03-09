@@ -5,16 +5,18 @@
  */
 package web.questions;
 
+import com.JSONHelper;
+import com.XMLHelper;
 import ejb.QuestionEntity;
 import ejb.QuestionEntityFacade;
 import ejb.UserQuestionEntity;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.HashSet;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -27,17 +29,25 @@ import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import web.CookieHelper;
 import web.ServletBase;
 import web.helpers.LoginHelperBean;
+import shapes.Circle;
+import shapes.Ellipse;
+import shapes.Line;
 import web.shapes.ShapeServletBase;
 import static web.shapes.ShapeServletBase.CreateImgUrl;
+import shapes.Square;
+import shapes.Triangle;
 
-@WebServlet(name = "QuestionController", urlPatterns = {"/question"})
+@WebServlet(name = "QuestionController", urlPatterns = {"/question/*"})
 public class QuestionController extends HttpServlet {
 
     public final static String AnswerParam = "Answer";
@@ -51,7 +61,7 @@ public class QuestionController extends HttpServlet {
 
     @EJB
     private QuestionEntityFacade questionEntityFacade;
-    
+
     @EJB
     private LoginHelperBean loginHelper;
 
@@ -81,21 +91,15 @@ public class QuestionController extends HttpServlet {
         connection.close();
     }
 
-    public void saveQuestion(Question q) throws JMSException {
-        System.out.println("Saving question " + q.getQuestion());
-
+    public void saveQuestion(QuestionEntity q) throws JMSException {
         QuestionEntity e = new QuestionEntity();
         e.setQuestion(q.getQuestion());
         e.setAnswer(q.getAnswer());
 
         saveEntity(e);
-        System.out.println("Saved question");
     }
 
-    public void saveAnswer(Long questionId, Long userId, double answer, boolean correct) throws JMSException {
-        System.out.println("Saving answer " + answer);
-        System.out.println("User " + userId);
-        System.out.println("Question " + questionId);
+    public UserQuestionEntity saveAnswer(Long questionId, Long userId, double answer, boolean correct) throws JMSException {
         UserQuestionEntity e = new UserQuestionEntity();
         e.setAnswer(answer);
         e.setCorrect(correct);
@@ -103,7 +107,144 @@ public class QuestionController extends HttpServlet {
         e.setQuestionID(questionId);
 
         saveEntity(e);
-        System.out.println("Saved answer");
+
+        return e;
+    }
+
+    private QuestionEntity doHtmlPost(HttpServletRequest request, HttpServletResponse response, double ans) throws JMSException, IOException {
+        PrintWriter out = response.getWriter();
+
+        QuestionEntity q = null;
+
+        String questionString = request.getParameter(QuestionParam);
+
+        List questions = questionEntityFacade.findAll();
+        for (Iterator it = questions.iterator(); it.hasNext();) {
+            QuestionEntity elem = (QuestionEntity) it.next();
+            if (elem.getQuestion().equals(questionString)) {
+                System.out.println(elem.getQuestion());
+                System.out.println(questionString);
+                q = elem;
+            }
+        }
+
+        saveAnswer(getQuestionId(questionString),
+                CookieHelper.GetUserIdFromCookie(request),
+                ans,
+                ans == q.getAnswer());
+
+        if (q == null) {
+            out.println("<h3>Sorry, there was an error!</h3>");
+        } else {
+            if (q.getAnswer() == ans) {
+                out.println("<h3>Correct! Well done. Try another question</h3>");
+            } else {
+                out.println("<h3>Incorrect. Try another question</h3>");
+            }
+        }
+
+        return q;
+    }
+
+    private UserQuestionEntity doApiPost(HttpServletRequest request) throws JMSException, URISyntaxException {
+        QuestionEntity q = null;
+        String answer = request.getParameter(AnswerParam);
+        double ans = Double.valueOf(answer);
+
+        q = getQuestionFromUrl(request);
+        if (q == null) {
+            String questionString = request.getParameter(QuestionParam);
+            List questions = questionEntityFacade.findAll();
+            for (Iterator it = questions.iterator(); it.hasNext();) {
+                QuestionEntity elem = (QuestionEntity) it.next();
+                if (elem.getQuestion().equals(questionString)) {
+                    q = elem;
+                    break;
+                }
+            }
+        }
+
+        return saveAnswer(q.getId(),
+                CookieHelper.GetUserIdFromCookie(request),
+                ans,
+                ans == q.getAnswer());
+    }
+
+    private void processJSONRequest(HttpServletRequest request, HttpServletResponse response, boolean post) throws IOException {
+        if (post) {
+            // this is a post request
+            // save the answer
+            try {
+                response.setStatus(201);
+                ServletOutputStream sos = response.getOutputStream();
+                sos.println(JSONHelper.GetJson(doApiPost(request)));
+            } catch (IOException | NumberFormatException | JMSException | URISyntaxException ex) {
+                System.out.println("Exception = " + ex);
+                response.sendError(422, "Unprocessable entity");
+            }
+        } else {
+            // this is a get request
+            // return a random question
+            try {
+                QuestionEntity q = getQuestion(request);
+                ServletOutputStream sos = response.getOutputStream();
+                sos.println(JSONHelper.GetJson(q));
+            } catch (IOException | URISyntaxException | JMSException ex) {
+                System.out.println("Exception = " + ex);
+                response.sendError(500, "Internal server error");
+            }
+        }
+    }
+
+    private void processXMLRequest(HttpServletRequest request, HttpServletResponse response, boolean post) throws IOException {
+        if (post) {
+            // this is a post request
+            // save the answer
+            try {
+                response.setStatus(201);
+                ServletOutputStream sos = response.getOutputStream();
+                XMLHelper.WriteToServletOutputStream(sos, UserQuestionEntity.class, doApiPost(request));
+            } catch (IOException | JAXBException | JMSException | URISyntaxException ex) {
+                System.out.println("Exception = " + ex);
+                response.sendError(422, "Unprocessable entity");
+            }
+        } else {
+            // this is a get request
+            // return a random question
+            try {
+                QuestionEntity q = getQuestion(request);
+                ServletOutputStream sos = response.getOutputStream();
+                XMLHelper.WriteToServletOutputStream(sos, q, JAXBContext.newInstance(Question.class, Line.class, Square.class, Triangle.class, Circle.class, Ellipse.class));
+            } catch (IOException | JAXBException | URISyntaxException | JMSException ex) {
+                System.out.println("Exception = " + ex);
+                response.sendError(500, "Internal server error");
+            }
+        }
+    }
+
+    private QuestionEntity getQuestion(HttpServletRequest request) throws URISyntaxException, JMSException {
+        QuestionEntity q = null;
+        q = getQuestionFromUrl(request);
+        if (q == null) {
+            q = Question.generateQuestion();
+            saveQuestion(q);
+        }
+
+        return q;
+    }
+
+    private QuestionEntity getQuestionFromUrl(HttpServletRequest request) throws URISyntaxException {
+        QuestionEntity q = null;
+        String url = request.getRequestURL().toString();
+        URI uri = new URI(url);
+        String path = uri.getPath();
+        String lastPart = path.substring(path.lastIndexOf('/') + 1);
+
+        if (lastPart == null || lastPart.equals("") || lastPart.equals("question")) {
+            return null;
+        } else {
+            return questionEntityFacade.find(Long.valueOf(lastPart));
+        }
     }
 
     /**
@@ -115,80 +256,58 @@ public class QuestionController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response, boolean post)
-            throws ServletException, IOException {
+    protected void processHtmlRequest(HttpServletRequest request, HttpServletResponse response, boolean post)
+            throws IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            String questionString = request.getParameter(QuestionParam);
 
             ShapeServletBase.PrintHead(out);
             ShapeServletBase.PrintBody(request.getContextPath(), loginHelper.ValidateRequest(request), loginHelper.ValidateTeacher(request), out);
             out.println("<h1>Answer the following question to 2 decimal places: </h1>");
 
-            Question q = null;
+            QuestionEntity q = null;
             if (post) {
                 // Lookup the answer and compare to submitted
-                List questions = questionEntityFacade.findAll();
-                for (Iterator it = questions.iterator(); it.hasNext();) {
-                    QuestionEntity elem = (QuestionEntity) it.next();
-                    if (elem.getQuestion().equals(questionString)) {
-                        q = new Question();
-                        q.setQuestion(elem.getQuestion());
-                        q.setAnswer(elem.getAnswer());
-
-                        break;
-                    }
-                }
 
                 String answer = request.getParameter(AnswerParam);
-                System.out.println("sub = " + answer);
-                System.out.println("stored = " + q.getAnswer());
-
                 double ans = Double.valueOf(answer);
 
-                saveAnswer(getQuestionId(questionString),
-                        CookieHelper.GetUserIdFromCookie(request),
-                        ans,
-                        ans == q.getAnswer());
-
-                if (q == null) {
-                    out.println("<h3>Sorry, there was an error!</h3>");
-                } else {
-                    if (q.getAnswer() == ans) {
-                        out.println("<h3>Correct! Well done. Try another question</h3>");
-                    } else {
-                        out.println("<h3>Incorrect. Try another question</h3>");
-                    }
-                }
-
-                //CookieHelper.RemoveQuestionSession(request);
+                doHtmlPost(request, response, ans);
 
                 out.println("<form method='get' action='" + request.getContextPath() + "/question'>");
-                out.println("<input type='submit' value='Go back'>");
+                out.println("<input type='submit' value='Try another'>");
                 out.println("</form>");
             } else {
-                q = Question.generateQuestion();
+                q = getQuestion(request);
                 saveQuestion(q);
-                //CookieHelper.CreateQuestionSession(request, q);
 
                 out.println("<img src='" + CreateImgUrl(request, q.getShape()) + "'>");
-
                 out.println("<h3>" + q.getQuestion() + "</h3>");
-                ServletBase.PrintForm(out, "Submit", request.getContextPath() + "/question", new String[]{AnswerParam}, new String[]{QuestionParam}, new String[]{q.getQuestion()});
-                //ServletBase.PrintForm(out, "Submit", request.getContextPath() + "/question", new String[]{AnswerParam});
+                ServletBase.PrintPostForm(out, "Submit", request.getContextPath() + "/question", new String[]{AnswerParam}, new String[]{QuestionParam}, new String[]{q.getQuestion()});
             }
-            
+
             ServletBase.EndBody(out);
 
-//            try {
-//                createQuestion(q.getQuestion(), q.getAnswer());
-//                CookieHelper.CreateQuestionSession(request, q);
-//            } catch (JMSException ex) {
-//                Logger.getLogger(QuestionController.class.getName()).log(Level.SEVERE, null, ex);
-//            }
         } catch (JMSException ex) {
             Logger.getLogger(QuestionController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(QuestionController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void processRequest(HttpServletRequest request, HttpServletResponse response, boolean post) throws IOException {
+        String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
+        switch (acceptHeader) {
+            case "application/json":
+                processJSONRequest(request, response, post);
+                break;
+            case "application/xml":
+                processXMLRequest(request, response, post);
+                break;
+            default:
+                processHtmlRequest(request, response, post);
+                break;
         }
     }
 
@@ -219,7 +338,6 @@ public class QuestionController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response, true);
-
     }
 
     /**

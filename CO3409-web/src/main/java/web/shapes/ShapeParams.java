@@ -5,6 +5,8 @@
  */
 package web.shapes;
 
+import shapes.Shape;
+
 public class ShapeParams {
 
     private Shape params = null;

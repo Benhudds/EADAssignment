@@ -52,12 +52,12 @@ public class DrawController extends HttpServlet {
             
             out.println("<h1>Draw a shape</h1>");
             
-            ServletBase.PrintForm(out, pointShape, request.getContextPath() + "/draw/" + pointShape.toLowerCase(), new String[]{});
-            ServletBase.PrintForm(out, lineShape, request.getContextPath() + "/draw/" + lineShape.toLowerCase(), new String[]{});
-            ServletBase.PrintForm(out, squareShape, request.getContextPath() + "/draw/" + squareShape.toLowerCase(), new String[]{});
-            ServletBase.PrintForm(out, triangleShape, request.getContextPath() + "/draw/" + triangleShape.toLowerCase(), new String[]{});
-            ServletBase.PrintForm(out, circleShape, request.getContextPath() + "/draw/" + circleShape.toLowerCase(), new String[]{});
-            ServletBase.PrintForm(out, ellipseShape, request.getContextPath() + "/draw/" + ellipseShape.toLowerCase(), new String[]{});
+            ServletBase.PrintGetForm(out, pointShape, request.getContextPath() + "/draw/" + pointShape.toLowerCase(), new String[]{});
+            ServletBase.PrintGetForm(out, lineShape, request.getContextPath() + "/draw/" + lineShape.toLowerCase(), new String[]{});
+            ServletBase.PrintGetForm(out, squareShape, request.getContextPath() + "/draw/" + squareShape.toLowerCase(), new String[]{});
+            ServletBase.PrintGetForm(out, triangleShape, request.getContextPath() + "/draw/" + triangleShape.toLowerCase(), new String[]{});
+            ServletBase.PrintGetForm(out, circleShape, request.getContextPath() + "/draw/" + circleShape.toLowerCase(), new String[]{});
+            ServletBase.PrintGetForm(out, ellipseShape, request.getContextPath() + "/draw/" + ellipseShape.toLowerCase(), new String[]{});
             
             ServletBase.EndBody(out);
         }

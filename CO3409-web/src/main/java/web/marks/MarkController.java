@@ -5,6 +5,8 @@
  */
 package web.marks;
 
+import com.JSONHelper;
+import com.XMLHelper;
 import ejb.QuestionEntity;
 import ejb.QuestionEntityFacade;
 import ejb.UserEntity;
@@ -15,14 +17,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import web.ServletBase;
 import web.helpers.LoginHelperBean;
 
@@ -38,8 +46,44 @@ public class MarkController extends HttpServlet {
     @EJB
     private QuestionEntityFacade qEntityFacade;
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    private Marks getMarks(HttpServletRequest request) throws URISyntaxException {
+        String url = request.getRequestURL().toString();
+        URI uri = new URI(url);
+        String path = uri.getPath();
+        String lastPart = path.substring(path.lastIndexOf('/') + 1);
+        Marks marks = new Marks();
+
+        if (lastPart != null && !lastPart.equals("") && !lastPart.equals("marks")) {
+
+            for (UserQuestionEntity ue : uQEntityFacade.findAll()) {
+                if (ue.getUserID() == Long.valueOf(lastPart)) {
+                    marks.incTotalAnswered();
+
+                    marks.addMark(ue);
+                    QuestionEntity q = qEntityFacade.find(ue.getQuestionID());
+                    if (ue.getAnswer() == q.getAnswer()) {
+                        marks.incTotalCorrect();
+                    }
+                }
+            }
+
+            return marks;
+        }
+
+        for (UserQuestionEntity ue : uQEntityFacade.findAll()) {
+            marks.incTotalAnswered();
+
+            marks.addMark(ue);
+            QuestionEntity q = qEntityFacade.find(ue.getQuestionID());
+            if (ue.getAnswer() == q.getAnswer()) {
+                marks.incTotalCorrect();
+            }
+        }
+
+        return marks;
+    }
+
+    private void processHtmlRequest(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
@@ -80,8 +124,8 @@ public class MarkController extends HttpServlet {
                     out.println("<td>" + q.getAnswer() + "</td>");
                     out.println("<td>" + ue.isCorrect() + "</td>");
                     out.println("</tr>");
-                    totalAnswered++;                   
-                    
+                    totalAnswered++;
+
                     if (ue.getAnswer() == q.getAnswer()) {
                         totalCorrect++;
                     }
@@ -92,10 +136,50 @@ public class MarkController extends HttpServlet {
 
             out.println("<h4>Total questions answered: " + totalAnswered + "</h4>");
             out.println("<h4>Total questions correct: " + totalCorrect + "</h4>");
-            
+
             ServletBase.EndBody(out);
         } catch (URISyntaxException ex) {
             Logger.getLogger(MarkController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MarkController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void processJSONRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            Marks marks = getMarks(request);
+            ServletOutputStream sos = response.getOutputStream();
+            sos.println(JSONHelper.GetJson(marks));
+        } catch (IOException | URISyntaxException ex) {
+            System.out.println("Exception = " + ex.getMessage());
+            response.sendError(500, "An internal server error ocurred");
+        }
+    }
+
+    private void processXMLRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            Marks marks = getMarks(request);
+            ServletOutputStream sos = response.getOutputStream();
+            XMLHelper.WriteToServletOutputStream(sos, Marks.class, marks);
+        } catch (IOException | URISyntaxException | JAXBException ex) {
+            System.out.println("Exception = " + ex.getMessage());
+            System.out.println(Arrays.toString(ex.getStackTrace()));
+            response.sendError(500, "An internal server error ocurred");
+        }
+    }
+
+    private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
+        switch (acceptHeader) {
+            case "application/json":
+                processJSONRequest(request, response);
+                break;
+            case "application/xml":
+                processXMLRequest(request, response);
+                break;
+            default:
+                processHtmlRequest(request, response);
+                break;
         }
     }
 

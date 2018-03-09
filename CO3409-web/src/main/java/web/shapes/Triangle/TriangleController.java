@@ -5,6 +5,8 @@
  */
 package web.shapes.Triangle;
 
+import imagehelpers.TriangleHelper;
+import shapes.Triangle;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.imageio.ImageIO;
@@ -15,7 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import web.helpers.LoginHelperBean;
-import web.shapes.ImageHelper;
+import imagehelpers.ImageHelper;
 import web.shapes.ShapeParams;
 import web.shapes.ShapeServletBase;
 

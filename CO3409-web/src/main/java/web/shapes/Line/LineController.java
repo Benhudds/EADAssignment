@@ -6,6 +6,8 @@
 
 package web.shapes.Line;
 
+import imagehelpers.LineHelper;
+import shapes.Line;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -17,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import web.shapes.ShapeServletBase;
 import javax.imageio.ImageIO;
 import web.helpers.LoginHelperBean;
-import web.shapes.ImageHelper;
+import imagehelpers.ImageHelper;
 import web.shapes.ShapeParams;
 
 @WebServlet(name="LineController", urlPatterns={"/draw/line"})
@@ -35,6 +37,8 @@ public class LineController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        System.out.println("get for line");
         String acceptHeader = request.getHeader(ShapeServletBase.ACCEPT_HEADER);
 
         switch (acceptHeader) {
@@ -81,7 +85,6 @@ public class LineController extends HttpServlet {
             throws ServletException, IOException {
         ShapeParams shapeParams = ShapeServletBase.validateShape(request, response, Line.class);
         ShapeServletBase.doPost(request, response, shapeParams, loginHelper.ValidateRequest(request), loginHelper.ValidateTeacher(request));
-
     }
 
     /**

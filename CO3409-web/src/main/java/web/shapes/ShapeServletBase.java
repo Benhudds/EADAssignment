@@ -5,6 +5,7 @@
  */
 package web.shapes;
 
+import shapes.Shape;
 import com.JSONHelper;
 import com.XMLHelper;
 import java.io.IOException;
@@ -65,7 +66,6 @@ public class ShapeServletBase extends ServletBase {
                     XMLHelper.WriteToServletOutputStream(response.getOutputStream(), params.getClass(), params.getShape());
                     break;
                 default:
-                    System.out.println("default");
                     try {
                         processHTMLRequest(request, response, params, true, loggedIn, teacher);
                     } catch (IOException ex) {
@@ -103,7 +103,7 @@ public class ShapeServletBase extends ServletBase {
             }
 
             String[] p = shapeParams.getShape().getParamNames();
-            ShapeServletBase.PrintForm(out, "Draw", request.getContextPath() + "/draw/" + shapeParams.getShape().getName(), p);
+            ShapeServletBase.PrintPostForm(out, "Draw", request.getContextPath() + "/draw/" + shapeParams.getShape().getName(), p);
             ShapeServletBase.EndBody(out);
             out.close();
         }

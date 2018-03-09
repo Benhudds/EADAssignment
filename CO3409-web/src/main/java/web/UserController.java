@@ -91,7 +91,7 @@ public class UserController extends HttpServlet {
             ServletBase.PrintBody(request.getContextPath(), loginHelper.ValidateRequest(request), loginHelper.ValidateTeacher(request), out);
 
             out.println("<h3>Create new student:</h3>");
-            ServletBase.PrintForm(out, "Create", request.getContextPath() + "/users", paramNames);
+            ServletBase.PrintPostForm(out, "Create", request.getContextPath() + "/users", paramNames);
 
             String url = request.getRequestURL().toString();
             URI uri = new URI(url);

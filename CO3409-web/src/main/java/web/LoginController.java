@@ -54,7 +54,7 @@ public class LoginController extends HttpServlet {
             if (error) {
                 out.println("<h3>Invalid username or password</h3>");
             }
-            ServletBase.PrintForm(out, "Login", request.getContextPath() + "/login", new String[]{LoginHelperBean.passwordParam, LoginHelperBean.usernameParam});
+            ServletBase.PrintPostForm(out, "Login", request.getContextPath() + "/login", new String[]{LoginHelperBean.passwordParam, LoginHelperBean.usernameParam});
 
             ServletBase.EndBody(out);
         }

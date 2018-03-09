@@ -5,6 +5,8 @@
  */
 package web.shapes.Ellipse;
 
+import imagehelpers.EllipseHelper;
+import shapes.Ellipse;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -16,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import web.shapes.ShapeServletBase;
 import javax.imageio.ImageIO;
 import web.helpers.LoginHelperBean;
-import web.shapes.ImageHelper;
+import imagehelpers.ImageHelper;
 import web.shapes.ShapeParams;
 
 @WebServlet(name = "EllipseController", urlPatterns = {"/draw/ellipse"})
