@@ -13,18 +13,13 @@ import javax.xml.bind.Marshaller;
 import shapes.Shape;
 
 public abstract class XMLHelper {
-    
-    public static void WriteToServletOutputStream(ServletOutputStream sos, Serializable params, JAXBContext context) throws JAXBException {
+
+    public static void WriteToSOSWithContext(ServletOutputStream sos, Serializable params, JAXBContext context) throws JAXBException {
         Marshaller marshaller = XMLHelper.getMarshaller(context);
         marshaller.marshal(params, sos);
     }
-    
-    public static void WriteToServletOutputStream(ServletOutputStream sos, Class c, Serializable params) throws JAXBException {
-        Marshaller marshaller = XMLHelper.getMarshaller(c);
-        marshaller.marshal(params, sos);
-    }
 
-    public static void WriteToServletOutputStream(ServletOutputStream sos, Class c, Shape params) throws JAXBException {
+    public static void WriteToServletOutputStream(ServletOutputStream sos, Class c, Serializable params) throws JAXBException {
         Marshaller marshaller = XMLHelper.getMarshaller(c);
         marshaller.marshal(params, sos);
     }
@@ -36,7 +31,7 @@ public abstract class XMLHelper {
 
         return jaxbMarshaller;
     }
-    
+
     public static Marshaller getMarshaller(JAXBContext jaxbContext) throws JAXBException {
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

@@ -56,16 +56,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.groovy.modules.http-builder</groupId>
+            <artifactId>http-builder</artifactId>
+            <version>0.7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>CO3409-web</artifactId>
+            <artifactId>CO3409-ejb</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.assignment</groupId>
-                    <artifactId>CO3409-web</artifactId>
-                </exclusion>
-            </exclusions>
-            <classifier>classes</classifier>
         </dependency>
     </dependencies>
     <properties>

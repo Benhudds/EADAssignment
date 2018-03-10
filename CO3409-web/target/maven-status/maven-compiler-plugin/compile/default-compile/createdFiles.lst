@@ -18,6 +18,7 @@ web\UserController.class
 web\ContentTypes.class
 web\shapes\Line\LineController.class
 web\shapes\Point\PointController.class
+web\TeacherFilter.class
 web\UnfilteredUrls.class
 web\LogoutController.class
 web\ServletBase.class

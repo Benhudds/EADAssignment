@@ -95,10 +95,6 @@ public class MarkController extends HttpServlet {
             String path = uri.getPath();
             String lastPart = path.substring(path.lastIndexOf('/') + 1);
 
-            if (lastPart == null) {
-
-            }
-
             out.println("<h3>Students</h3>");
 
             out.println("<table>");
@@ -113,9 +109,27 @@ public class MarkController extends HttpServlet {
             int totalAnswered = 0;
             int totalCorrect = 0;
 
-            for (UserQuestionEntity ue : uQEntityFacade.findAll()) {
-                if (ue.getUserID() == Integer.parseInt(lastPart)) {
+            if (lastPart != null && !lastPart.equals("") && !lastPart.equals("marks")) {
+                for (UserQuestionEntity ue : uQEntityFacade.findAll()) {
+                    if (ue.getUserID() == Integer.parseInt(lastPart)) {
 
+                        out.println("<tr>");
+
+                        QuestionEntity q = qEntityFacade.find(ue.getQuestionID());
+                        out.println("<td>" + q.getQuestion() + "</td>");
+                        out.println("<td>" + ue.getAnswer() + "</td>");
+                        out.println("<td>" + q.getAnswer() + "</td>");
+                        out.println("<td>" + ue.isCorrect() + "</td>");
+                        out.println("</tr>");
+                        totalAnswered++;
+
+                        if (ue.getAnswer() == q.getAnswer()) {
+                            totalCorrect++;
+                        }
+                    }
+                }
+            } else {
+                for (UserQuestionEntity ue : uQEntityFacade.findAll()) {
                     out.println("<tr>");
 
                     QuestionEntity q = qEntityFacade.find(ue.getQuestionID());

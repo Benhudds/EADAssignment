@@ -214,7 +214,8 @@ public class QuestionController extends HttpServlet {
             try {
                 QuestionEntity q = getQuestion(request);
                 ServletOutputStream sos = response.getOutputStream();
-                XMLHelper.WriteToServletOutputStream(sos, q, JAXBContext.newInstance(Question.class, Line.class, Square.class, Triangle.class, Circle.class, Ellipse.class));
+                JAXBContext context = JAXBContext.newInstance(QuestionEntity.class, Line.class, Square.class, Triangle.class, Circle.class, Ellipse.class);
+                XMLHelper.WriteToSOSWithContext(sos, q, context);
             } catch (IOException | JAXBException | URISyntaxException | JMSException ex) {
                 System.out.println("Exception = " + ex);
                 response.sendError(500, "Internal server error");
@@ -298,12 +299,15 @@ public class QuestionController extends HttpServlet {
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response, boolean post) throws IOException {
         String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
+        System.out.println(acceptHeader);
         switch (acceptHeader) {
             case "application/json":
                 processJSONRequest(request, response, post);
+                response.setContentType("application/json");
                 break;
             case "application/xml":
                 processXMLRequest(request, response, post);
+                response.setContentType("application/xml");
                 break;
             default:
                 processHtmlRequest(request, response, post);

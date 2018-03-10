@@ -8,6 +8,7 @@ package web.helpers;
 import com.JWTHelper;
 import ejb.UserEntity;
 import ejb.UserEntityFacade;
+import io.jsonwebtoken.Claims;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -50,6 +51,7 @@ public class LoginHelperBean {
 
         if (user != null && user.getPassword().equals(password)) {
             CookieHelper.CreateLoginCookie(response, user);
+            response.setHeader(authHeader, JWTHelper.createJWT(user.getId().toString()));
             return true;
         } else {
             return false;
@@ -57,8 +59,21 @@ public class LoginHelperBean {
     }
 
     public boolean ValidateRequest(HttpServletRequest request) {
-        Long user = CookieHelper.GetUserIdFromCookie(request);
 
+        String header = request.getHeader(authHeader);
+        if (header != null) {
+            Claims jwt = JWTHelper.parseJWT(request.getHeader(authHeader));
+            String id = jwt.getSubject();
+            System.out.println(id);
+            if (id != null) {
+                if (userEntityFacade.find(Long.valueOf(id)) != null) {
+                    return true;
+                }
+            }
+        }
+
+        Long user = CookieHelper.GetUserIdFromCookie(request);
+        System.out.println("user = " + user);
         if (user != null && userEntityFacade.find(user) != null) {
             return true;
         }

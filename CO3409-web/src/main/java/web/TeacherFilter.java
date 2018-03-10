@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import javax.ejb.EJB;
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -24,8 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import web.helpers.LoginHelperBean;
 
-@WebFilter(filterName = "HttpFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})
-public class HttpFilter implements Filter {
+@WebFilter(filterName = "TeacherFilter", urlPatterns = {"/marks/*", "/users/*", "/marks"})
+public class TeacherFilter implements Filter {
 
     @EJB
     private LoginHelperBean loginHelper;
@@ -37,13 +34,13 @@ public class HttpFilter implements Filter {
     // configured. 
     private FilterConfig filterConfig = null;
 
-    public HttpFilter() {
+    public TeacherFilter() {
     }
 
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("HttpFilter:DoBeforeProcessing");
+            log("TeacherFilter:DoBeforeProcessing");
         }
 
         // Write code here to process the request and/or response before
@@ -71,7 +68,7 @@ public class HttpFilter implements Filter {
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("HttpFilter:DoAfterProcessing");
+            log("TeacherFilter:DoAfterProcessing");
         }
 
         // Write code here to process the request and/or response after
@@ -107,7 +104,7 @@ public class HttpFilter implements Filter {
             throws IOException, ServletException {
 
         if (debug) {
-            log("HttpFilter:doFilter()");
+            log("TeacherFilter:doFilter()");
         }
 
         doBeforeProcessing(request, response);
@@ -116,50 +113,28 @@ public class HttpFilter implements Filter {
         try {
             if (request instanceof HttpServletRequest) {
                 HttpServletRequest httpRequest = (HttpServletRequest) request;
-                String url = httpRequest.getRequestURL().toString();
-                URI uri = new URI(url);
-                String path = uri.getPath();
-                String lastPart = path.substring(path.lastIndexOf('/') + 1);
-
-                boolean unfiltered = false;
-                for (UnfilteredUrls u : UnfilteredUrls.values()) {
-                    if (lastPart.equals(u.toString())) {
-                        unfiltered = true;
-                        break;
+                if (!loginHelper.ValidateTeacher(httpRequest)) {
+                    String acceptHeader = httpRequest.getHeader(ServletBase.ACCEPT_HEADER);
+                    HttpServletResponse httpResponse = (HttpServletResponse) response;
+                    
+                    switch (acceptHeader) {
+                        case "application/json":
+                        case "application/xml":
+                            httpResponse.sendError(401);
+                            return;
+                        default:
+                            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
+                            return;
                     }
                 }
-
-                // Don't filter if we are going to home (filter is on all urls)
-                if (!unfiltered) {
-                    if (!loginHelper.ValidateRequest(httpRequest)) {
-                        String acceptHeader = httpRequest.getHeader(ServletBase.ACCEPT_HEADER);
-                        HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-                        switch (acceptHeader) {
-                            case "application/json":
-                            case "application/xml":
-                                httpResponse.setContentType(acceptHeader);
-                                httpResponse.sendError(401);
-                                return;
-                            default:
-                                System.out.println("redirecting to login");
-                                System.out.println("status = " + httpResponse.getStatus());
-                                httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
-                                System.out.println("status = " + httpResponse.getStatus());
-                                return;
-
-                        }
-                    }
-                }
-                // else skip filtering
             }
-
             chain.doFilter(request, response);
-        } catch (IOException | URISyntaxException | ServletException t) {
+        } catch (Throwable t) {
             // If an exception is thrown somewhere down the filter chain,
             // we still want to execute our after processing, and then
             // rethrow the problem after that.
             problem = t;
+            t.printStackTrace();
         }
 
         doAfterProcessing(request, response);
@@ -206,7 +181,7 @@ public class HttpFilter implements Filter {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
             if (debug) {
-                log("HttpFilter:Initializing filter");
+                log("TeacherFilter:Initializing filter");
             }
         }
     }
@@ -217,9 +192,9 @@ public class HttpFilter implements Filter {
     @Override
     public String toString() {
         if (filterConfig == null) {
-            return ("HttpFilter()");
+            return ("TeacherFilter()");
         }
-        StringBuffer sb = new StringBuffer("HttpFilter(");
+        StringBuffer sb = new StringBuffer("TeacherFilter(");
         sb.append(filterConfig);
         sb.append(")");
         return (sb.toString());

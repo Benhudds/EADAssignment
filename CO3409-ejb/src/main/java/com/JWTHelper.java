@@ -21,6 +21,8 @@ public class JWTHelper {
 
     public static String createJWT(String subject) {
 
+        System.out.println("subject= " + subject);
+        
         //The JWT signature algorithm we will be using to sign the token
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -38,14 +40,19 @@ public class JWTHelper {
                 .signWith(signatureAlgorithm, signingKey);
 
         //Builds the JWT and serializes it to a compact, URL-safe string
+        System.out.println("key= " + builder.compact());
         return builder.compact();
     }
 
     public static Claims parseJWT(String jwt) {
-
-        //This line will throw an exception if it is not a signed JWS (as expected)
-        return Jwts.parser()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(Key))
-                .parseClaimsJws(jwt).getBody();
+        if (jwt != null && !jwt.equals("")) {
+        System.out.println("key= " + jwt);
+            //This line will throw an exception if it is not a signed JWS (as expected)
+            return Jwts.parser()
+                    .setSigningKey(DatatypeConverter.parseBase64Binary(Key))
+                    .parseClaimsJws(jwt).getBody();
+        }
+        
+        return null;
     }
 }

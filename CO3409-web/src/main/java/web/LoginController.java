@@ -89,9 +89,20 @@ public class LoginController extends HttpServlet {
         // Check if valid
         try {
             if (loginHelper.Login(request, response)) {
-                response.sendRedirect(request.getContextPath() + "/home");
+                request.getRequestDispatcher("/home").include(request, response);
+                System.out.println("authheader = " + response.getHeader("Authorization"));
+                //response.sendRedirect(request.getContextPath() + "/home?jwt=" + response.getHeader("Authorization"));
             } else {
-                processRequest(request, response, true);
+                String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
+                switch (acceptHeader) {
+                    case "application/json":
+                    case "application/xml":
+                        response.sendError(401);
+                        break;
+                    default:
+                        processRequest(request, response, true);
+                        break;
+                }
             }
         } catch (Exception e) {
 

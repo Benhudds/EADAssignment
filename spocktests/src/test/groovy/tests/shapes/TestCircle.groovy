@@ -11,9 +11,8 @@ import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
-import web.shapes.Circle.Circle
-import web.shapes.Circle.CircleQuestions
-
+import shapes.Circle
+import questions.CircleQuestions
 
 import static org.junit.Assert.*
 
@@ -23,8 +22,8 @@ class TestCircle extends spock.lang.Specification {
     def "area calculation correct"() {
         given:
         circle.setX(0)
-        circle.setX(0)
-        circle.radius << (0..400)
+        circle.setY(0)
+        circle.radius = 0
         when:
         double ans = circle.getAnswer(CircleQuestions.AREA)
         then:
@@ -34,7 +33,7 @@ class TestCircle extends spock.lang.Specification {
     def "circumference calculation correct"() {
         given:
         circle.setX(0)
-        circle.setX(0)
+        circle.setY(0)
         circle.radius = 0
         when:
         double ans = circle.getAnswer(CircleQuestions.CIRCUMFERENCE)
