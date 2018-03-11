@@ -26,7 +26,7 @@ class TestLogin extends spock.lang.Specification {
         then:
         // we redirect when successful
         assert !(resp.getHeaders("Authorization") == [])
-        assert resp.status == 200
+        assert resp.status == 302
     }
     
     def "error when incorrect credentials"() {

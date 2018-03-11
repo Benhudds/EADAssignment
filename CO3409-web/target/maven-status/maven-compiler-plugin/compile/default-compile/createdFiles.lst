@@ -14,7 +14,6 @@ web\LoginController.class
 web\shapes\ShapeParams.class
 web\helpers\LoginHelperBean.class
 web\HttpFilter.class
-web\UserController.class
 web\ContentTypes.class
 web\shapes\Line\LineController.class
 web\shapes\Point\PointController.class

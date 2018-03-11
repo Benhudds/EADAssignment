@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package web;
+package web.users;
 
+import com.JSONHelper;
+import com.XMLHelper;
 import ejb.UserEntityFacade;
 import ejb.UserEntity;
 import ejb.UserQuestionEntityFacade;
@@ -13,10 +15,8 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -29,10 +29,13 @@ import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
+import web.ServletBase;
 import web.helpers.LoginHelperBean;
 import web.marks.MarkController;
 
@@ -82,7 +85,33 @@ public class UserController extends HttpServlet {
         saveEntity(e);
     }
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    private Users getUsers(HttpServletRequest request) throws URISyntaxException {
+        String url = request.getRequestURL().toString();
+        URI uri = new URI(url);
+        String path = uri.getPath();
+        String lastPart = path.substring(path.lastIndexOf('/') + 1);
+        Users marks = new Users();
+
+        if (lastPart != null && !lastPart.equals("") && !lastPart.equals("users")) {
+
+            for (UserEntity u : uEFacade.findAll()) {
+                System.out.println("lastpart = " + lastPart);
+                if (Objects.equals(u.getId(), Long.valueOf(lastPart))) {
+                    marks.addUser(u);
+                }
+            }
+
+            return marks;
+        }
+
+        for (UserEntity u : uEFacade.findAll()) {
+            marks.addUser(u);
+        }
+
+        return marks;
+    }
+
+    private void processHtmlRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
@@ -131,6 +160,45 @@ public class UserController extends HttpServlet {
         }
     }
 
+    private void processJSONRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            Users users = getUsers(request);
+            ServletOutputStream sos = response.getOutputStream();
+            sos.println(JSONHelper.GetJson(users));
+        } catch (IOException | URISyntaxException ex) {
+            System.out.println("Exception = " + ex.getMessage());
+            response.sendError(500, "An internal server error ocurred");
+        }
+    }
+
+    private void processXMLRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            Users users = getUsers(request);
+            ServletOutputStream sos = response.getOutputStream();
+            XMLHelper.WriteToServletOutputStream(sos, Users.class, users);
+        } catch (IOException | URISyntaxException | JAXBException ex) {
+            System.out.println("Exception = " + ex.getMessage());
+            System.out.println(Arrays.toString(ex.getStackTrace()));
+            response.sendError(500, "An internal server error ocurred");
+        }
+    }
+
+    private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
+        System.out.println("hit controller");
+        switch (acceptHeader) {
+            case "application/json":
+                processJSONRequest(request, response);
+                break;
+            case "application/xml":
+                processXMLRequest(request, response);
+                break;
+            default:
+                processHtmlRequest(request, response);
+                break;
+        }
+    }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -157,6 +225,7 @@ public class UserController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
         try {
             String firstName = request.getParameter(paramNames[4]);
             String lastName = request.getParameter(paramNames[3]);
@@ -165,9 +234,17 @@ public class UserController extends HttpServlet {
             boolean teacher = Boolean.getBoolean(request.getParameter(paramNames[0]));
 
             saveUser(lastName, firstName, userName, password, teacher);
+
             response.sendRedirect(request.getContextPath() + "/users");
         } catch (Exception e) {
-
+            switch (acceptHeader) {
+                case "application/json":
+                case "application/xml":
+                    response.sendError(422);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

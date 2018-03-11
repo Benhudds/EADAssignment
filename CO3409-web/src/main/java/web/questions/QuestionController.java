@@ -13,8 +13,10 @@ import ejb.UserQuestionEntity;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -122,16 +124,17 @@ public class QuestionController extends HttpServlet {
         for (Iterator it = questions.iterator(); it.hasNext();) {
             QuestionEntity elem = (QuestionEntity) it.next();
             if (elem.getQuestion().equals(questionString)) {
-                System.out.println(elem.getQuestion());
-                System.out.println(questionString);
                 q = elem;
             }
         }
 
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        
         saveAnswer(getQuestionId(questionString),
                 CookieHelper.GetUserIdFromCookie(request),
                 ans,
-                ans == q.getAnswer());
+                Question.TestAnswer(ans, q.getAnswer()));
 
         if (q == null) {
             out.println("<h3>Sorry, there was an error!</h3>");
@@ -162,12 +165,15 @@ public class QuestionController extends HttpServlet {
                     break;
                 }
             }
+            
+            System.out.println(q.getQuestion());
+            System.out.println(q.getAnswer());
         }
-
+        
         return saveAnswer(q.getId(),
                 CookieHelper.GetUserIdFromCookie(request),
                 ans,
-                ans == q.getAnswer());
+                Question.TestAnswer(ans, q.getAnswer()));
     }
 
     private void processJSONRequest(HttpServletRequest request, HttpServletResponse response, boolean post) throws IOException {

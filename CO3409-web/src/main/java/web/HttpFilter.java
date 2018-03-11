@@ -142,10 +142,7 @@ public class HttpFilter implements Filter {
                                 httpResponse.sendError(401);
                                 return;
                             default:
-                                System.out.println("redirecting to login");
-                                System.out.println("status = " + httpResponse.getStatus());
                                 httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
-                                System.out.println("status = " + httpResponse.getStatus());
                                 return;
 
                         }

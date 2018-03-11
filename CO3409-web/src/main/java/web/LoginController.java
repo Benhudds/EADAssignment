@@ -21,16 +21,16 @@ import web.helpers.LoginHelperBean;
 
 @WebServlet(name = "LoginController", urlPatterns = {"/login"})
 public class LoginController extends HttpServlet {
-
+    
     @Resource(mappedName = "jms/__defaultConnectionFactory")
     private ConnectionFactory connectionFactory;
-
+    
     @Resource(mappedName = "jms/NewMessage")
     private Queue queue;
-
+    
     @EJB
     private UserEntityFacade userEntityFacade;
-
+    
     @EJB
     private LoginHelperBean loginHelper;
 
@@ -49,13 +49,13 @@ public class LoginController extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             ServletBase.PrintHead(out);
             ServletBase.PrintBody(request.getContextPath(), loginHelper.ValidateRequest(request), loginHelper.ValidateTeacher(request), out);
-
+            
             out.println("<h1>Login</h1>");
             if (error) {
                 out.println("<h3>Invalid username or password</h3>");
             }
             ServletBase.PrintPostForm(out, "Login", request.getContextPath() + "/login", new String[]{LoginHelperBean.passwordParam, LoginHelperBean.usernameParam});
-
+            
             ServletBase.EndBody(out);
         }
     }
@@ -88,12 +88,18 @@ public class LoginController extends HttpServlet {
             throws ServletException, IOException {
         // Check if valid
         try {
+            String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
             if (loginHelper.Login(request, response)) {
-                request.getRequestDispatcher("/home").include(request, response);
-                System.out.println("authheader = " + response.getHeader("Authorization"));
-                //response.sendRedirect(request.getContextPath() + "/home?jwt=" + response.getHeader("Authorization"));
+                switch (acceptHeader) {
+                    case "application/json":
+                    case "application/xml":
+                        request.getRequestDispatcher("/home").include(request, response);
+                        break;
+                    default:
+                        response.sendRedirect(request.getContextPath() + "/home");
+                        break;
+                }
             } else {
-                String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
                 switch (acceptHeader) {
                     case "application/json":
                     case "application/xml":
@@ -105,7 +111,7 @@ public class LoginController extends HttpServlet {
                 }
             }
         } catch (Exception e) {
-
+            
         }
     }
 

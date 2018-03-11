@@ -203,4 +203,10 @@ public class Question implements Serializable {
 
         return returnQuestion;
     }
+    
+    public static boolean TestAnswer(double ans1, double ans2) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return df.format(ans1).equals(df.format(ans2));
+    }
 }

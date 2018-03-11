@@ -5,6 +5,7 @@
  */
 package web;
 
+import web.users.UserController;
 import java.io.PrintWriter;
 import web.helpers.LoginHelperBean;
 

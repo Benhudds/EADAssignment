@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import web.helpers.LoginHelperBean;
 
-@WebFilter(filterName = "TeacherFilter", urlPatterns = {"/marks/*", "/users/*", "/marks"})
+@WebFilter(filterName = "TeacherFilter", urlPatterns = {"/marks/*", "/users/*", "/marks", "/users"})
 public class TeacherFilter implements Filter {
 
     @EJB
@@ -123,6 +123,7 @@ public class TeacherFilter implements Filter {
                             httpResponse.sendError(401);
                             return;
                         default:
+                            System.out.println("redirecting");
                             httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
                             return;
                     }

@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import web.ServletBase;
 import web.helpers.LoginHelperBean;
+import web.questions.Question;
 
 @WebServlet(name = "MarkController", urlPatterns = {"/marks/*"})
 public class MarkController extends HttpServlet {
@@ -61,7 +62,7 @@ public class MarkController extends HttpServlet {
 
                     marks.addMark(ue);
                     QuestionEntity q = qEntityFacade.find(ue.getQuestionID());
-                    if (ue.getAnswer() == q.getAnswer()) {
+                    if (ue.isCorrect()) {
                         marks.incTotalCorrect();
                     }
                 }
@@ -75,7 +76,7 @@ public class MarkController extends HttpServlet {
 
             marks.addMark(ue);
             QuestionEntity q = qEntityFacade.find(ue.getQuestionID());
-            if (ue.getAnswer() == q.getAnswer()) {
+            if (ue.isCorrect()) {
                 marks.incTotalCorrect();
             }
         }
@@ -123,7 +124,7 @@ public class MarkController extends HttpServlet {
                         out.println("</tr>");
                         totalAnswered++;
 
-                        if (ue.getAnswer() == q.getAnswer()) {
+                        if (ue.isCorrect()) {
                             totalCorrect++;
                         }
                     }
@@ -140,7 +141,7 @@ public class MarkController extends HttpServlet {
                     out.println("</tr>");
                     totalAnswered++;
 
-                    if (ue.getAnswer() == q.getAnswer()) {
+                    if (ue.isCorrect()) {
                         totalCorrect++;
                     }
                 }

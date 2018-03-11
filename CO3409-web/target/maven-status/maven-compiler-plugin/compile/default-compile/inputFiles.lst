@@ -6,7 +6,6 @@ C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\shap
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\questions\Question.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\ServletBase.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\shapes\ShapeParams.java
-C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\UserController.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\shapes\Triangle\TriangleController.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\shapes\Square\SquareController.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\LogoutController.java
@@ -16,7 +15,9 @@ C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\Teac
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\helpers\LoginHelperBean.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\HttpFilter.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\shapes\Line\LineController.java
+C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\users\UserController.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\CookieHelper.java
+C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\users\Users.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\shapes\Ellipse\EllipseController.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\ContentTypes.java
 C:\Users\Ben\Documents\NetBeansProjects\CO3409\CO3409-web\src\main\java\web\LoginController.java
