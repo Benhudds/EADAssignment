@@ -90,27 +90,26 @@ public class UserController extends HttpServlet {
         URI uri = new URI(url);
         String path = uri.getPath();
         String lastPart = path.substring(path.lastIndexOf('/') + 1);
-        Users marks = new Users();
+        Users users = new Users();
 
         if (lastPart != null && !lastPart.equals("") && !lastPart.equals("users")) {
 
             for (UserEntity u : uEFacade.findAll()) {
-                System.out.println("lastpart = " + lastPart);
                 if (Objects.equals(u.getId(), Long.valueOf(lastPart))) {
-                    marks.addUser(u);
+                    users.addUser(u);
                 }
             }
 
-            return marks;
+            return users;
         }
 
         for (UserEntity u : uEFacade.findAll()) {
-            marks.addUser(u);
+            users.addUser(u);
         }
 
-        return marks;
+        return users;
     }
-
+    
     private void processHtmlRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -233,9 +232,22 @@ public class UserController extends HttpServlet {
             String password = request.getParameter(paramNames[1]);
             boolean teacher = Boolean.getBoolean(request.getParameter(paramNames[0]));
 
+            if (firstName == null || lastName == null || userName == null || password == null)
+            {
+                throw new Exception();
+            }
+            
             saveUser(lastName, firstName, userName, password, teacher);
 
-            response.sendRedirect(request.getContextPath() + "/users");
+            switch (acceptHeader) {
+                case "application/json":
+                case "application/xml":
+                    response.setStatus(201);
+                    break;
+                default:
+                    response.sendRedirect(request.getContextPath() + "/users");
+                    break;
+            }
         } catch (Exception e) {
             switch (acceptHeader) {
                 case "application/json":

@@ -31,7 +31,11 @@ public class LoginHelperBean {
     }
 
     private Long ParseToken(String token) {
-        return new Long(JWTHelper.parseJWT(token).getSubject());
+        try {
+            return new Long(JWTHelper.parseJWT(token).getSubject());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public boolean Login(HttpServletRequest request, HttpServletResponse response) {
@@ -62,13 +66,19 @@ public class LoginHelperBean {
 
         String header = request.getHeader(authHeader);
         if (header != null) {
-            Claims jwt = JWTHelper.parseJWT(request.getHeader(authHeader));
-            String id = jwt.getSubject();
-            System.out.println(id);
-            if (id != null) {
-                if (userEntityFacade.find(Long.valueOf(id)) != null) {
-                    return true;
+            try {
+                Claims jwt = JWTHelper.parseJWT(request.getHeader(authHeader));
+                if (jwt != null) {
+                    String id = jwt.getSubject();
+                    System.out.println(id);
+                    if (id != null) {
+                        if (userEntityFacade.find(Long.valueOf(id)) != null) {
+                            return true;
+                        }
+                    }
                 }
+            } catch (Exception e) {
+
             }
         }
 
@@ -83,26 +93,31 @@ public class LoginHelperBean {
 
     public boolean ValidateTeacher(HttpServletRequest request) {
         UserEntity ue;
-        
+
         String header = request.getHeader(authHeader);
         if (header != null) {
-            System.out.println(header);
-            Claims jwt = JWTHelper.parseJWT(request.getHeader(authHeader));
-            String id = jwt.getSubject();
-            if (id != null) {
-                System.out.println(id);
-                ue = userEntityFacade.find(Long.valueOf(id));
-                if (ue != null) {
-                    return ue.isTeacher();
+            try {
+                Claims jwt = JWTHelper.parseJWT(request.getHeader(authHeader));
+                if (jwt != null) {
+                    String id = jwt.getSubject();
+                    if (id != null) {
+                        System.out.println(id);
+                        ue = userEntityFacade.find(Long.valueOf(id));
+                        if (ue != null) {
+                            return ue.isTeacher();
+                        }
+                    }
                 }
+            } catch (Exception e) {
+
             }
         }
-        
+
         Long user = CookieHelper.GetUserIdFromCookie(request);
         if (user != null) {
             ue = userEntityFacade.find(user);
             if (ue != null) {
-            System.out.println(ue.isTeacher());
+                System.out.println(ue.isTeacher());
                 return ue.isTeacher();
             }
         }

@@ -183,9 +183,9 @@ public class QuestionController extends HttpServlet {
                 response.setStatus(201);
                 ServletOutputStream sos = response.getOutputStream();
                 sos.println(JSONHelper.GetJson(doApiPost(request)));
-            } catch (IOException | NumberFormatException | JMSException | URISyntaxException ex) {
+            } catch (Exception ex) {
                 System.out.println("Exception = " + ex);
-                response.sendError(422, "Unprocessable entity");
+                response.setStatus(422);
             }
         } else {
             // this is a get request
@@ -196,7 +196,7 @@ public class QuestionController extends HttpServlet {
                 sos.println(JSONHelper.GetJson(q));
             } catch (IOException | URISyntaxException | JMSException ex) {
                 System.out.println("Exception = " + ex);
-                response.sendError(500, "Internal server error");
+                response.setStatus(500);
             }
         }
     }
@@ -209,9 +209,9 @@ public class QuestionController extends HttpServlet {
                 response.setStatus(201);
                 ServletOutputStream sos = response.getOutputStream();
                 XMLHelper.WriteToServletOutputStream(sos, UserQuestionEntity.class, doApiPost(request));
-            } catch (IOException | JAXBException | JMSException | URISyntaxException ex) {
+            } catch (Exception ex) {
                 System.out.println("Exception = " + ex);
-                response.sendError(422, "Unprocessable entity");
+                response.setStatus(422);
             }
         } else {
             // this is a get request
@@ -223,7 +223,7 @@ public class QuestionController extends HttpServlet {
                 XMLHelper.WriteToSOSWithContext(sos, q, context);
             } catch (IOException | JAXBException | URISyntaxException | JMSException ex) {
                 System.out.println("Exception = " + ex);
-                response.sendError(500, "Internal server error");
+                response.setStatus(500);
             }
         }
     }
