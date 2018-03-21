@@ -123,7 +123,6 @@ public class TeacherFilter implements Filter {
                             httpResponse.sendError(401);
                             return;
                         default:
-                            System.out.println("redirecting");
                             httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
                             return;
                     }

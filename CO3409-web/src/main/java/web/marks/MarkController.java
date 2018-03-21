@@ -9,8 +9,6 @@ import com.JSONHelper;
 import com.XMLHelper;
 import ejb.QuestionEntity;
 import ejb.QuestionEntityFacade;
-import ejb.UserEntity;
-import ejb.UserEntityFacade;
 import ejb.UserQuestionEntity;
 import ejb.UserQuestionEntityFacade;
 import java.io.IOException;
@@ -18,8 +16,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -29,11 +26,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import web.ServletBase;
 import web.helpers.LoginHelperBean;
-import web.questions.Question;
 
 @WebServlet(name = "MarkController", urlPatterns = {"/marks/*"})
 public class MarkController extends HttpServlet {
@@ -57,7 +52,7 @@ public class MarkController extends HttpServlet {
         if (lastPart != null && !lastPart.equals("") && !lastPart.equals("marks")) {
 
             for (UserQuestionEntity ue : uQEntityFacade.findAll()) {
-                if (ue.getUserID() == Long.valueOf(lastPart)) {
+                if (Objects.equals(ue.getUserID(), Long.valueOf(lastPart))) {
                     marks.incTotalAnswered();
 
                     marks.addMark(ue);
@@ -96,13 +91,14 @@ public class MarkController extends HttpServlet {
             String path = uri.getPath();
             String lastPart = path.substring(path.lastIndexOf('/') + 1);
 
-            out.println("<h3>Students</h3>");
+            out.println("<h3>Marks</h3>");
 
             out.println("<table>");
             out.println("<tr>");
             out.println("<th>Question</th>");
             out.println("<th>Submitted Answer</th>");
             out.println("<th>Correct Answer</th>");
+            out.println("<th>Attempted At</th>");
             out.println("<th>Correct</th>");
 
             out.println("</tr>");
@@ -120,6 +116,7 @@ public class MarkController extends HttpServlet {
                         out.println("<td>" + q.getQuestion() + "</td>");
                         out.println("<td>" + ue.getAnswer() + "</td>");
                         out.println("<td>" + q.getAnswer() + "</td>");
+                        out.println("<td>" + ue.getAttempted()+ "</td>");
                         out.println("<td>" + ue.isCorrect() + "</td>");
                         out.println("</tr>");
                         totalAnswered++;
@@ -224,7 +221,15 @@ public class MarkController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String acceptHeader = request.getHeader(ServletBase.ACCEPT_HEADER);
+        switch (acceptHeader) {
+            case "application/json":
+            case "application/xml":
+                response.setStatus(405);
+            default:
+                processRequest(request, response);
+                break;
+        }
     }
 
     /**

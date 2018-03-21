@@ -119,7 +119,7 @@ public class UserController extends HttpServlet {
             ServletBase.PrintHead(out);
             ServletBase.PrintBody(request.getContextPath(), loginHelper.ValidateRequest(request), loginHelper.ValidateTeacher(request), out);
 
-            out.println("<h3>Create new student:</h3>");
+            out.println("<h3>Create new user:</h3>");
             ServletBase.PrintPostForm(out, "Create", request.getContextPath() + "/users", paramNames);
 
             String url = request.getRequestURL().toString();

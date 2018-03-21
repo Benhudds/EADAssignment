@@ -17,9 +17,10 @@ import questions.CircleQuestions
 import static org.junit.Assert.*
 
 class TestCircle extends spock.lang.Specification {
+    
     def circle = new Circle();
     
-    def "area calculation correct"() {
+    def "area calculation correct 0"() {
         given:
         circle.setX(0)
         circle.setY(0)
@@ -30,11 +31,34 @@ class TestCircle extends spock.lang.Specification {
         ans == Math.PI * circle.getRadius() * circle.getRadius()
     }
     
-    def "circumference calculation correct"() {
+    def "area calculation correct"() {
+        given:
+        circle.setX(0)
+        circle.setY(0)
+        circle.radius = 5
+        when:
+        double ans = circle.getAnswer(CircleQuestions.AREA)
+        then:
+        ans == Math.PI * circle.getRadius() * circle.getRadius()
+    }
+
+    
+    def "circumference calculation correct 0"() {
         given:
         circle.setX(0)
         circle.setY(0)
         circle.radius = 0
+        when:
+        double ans = circle.getAnswer(CircleQuestions.CIRCUMFERENCE)
+        then:
+        ans == Math.PI * circle.getRadius() * 2
+    }
+    
+    def "circumference calculation correct 2"() {
+        given:
+        circle.setX(0)
+        circle.setY(0)
+        circle.radius = 2
         when:
         double ans = circle.getAnswer(CircleQuestions.CIRCUMFERENCE)
         then:

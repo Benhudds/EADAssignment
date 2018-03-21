@@ -10,7 +10,6 @@ import javax.servlet.ServletOutputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import shapes.Shape;
 
 public abstract class XMLHelper {
 

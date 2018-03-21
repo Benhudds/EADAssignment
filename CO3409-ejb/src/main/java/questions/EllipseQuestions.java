@@ -8,7 +8,7 @@ package questions;
 
 public enum EllipseQuestions {
     AREA("area"),
-    PERIMITER("perimiter");
+    PERIMETER("perimeter");
     
     private final String text;
     

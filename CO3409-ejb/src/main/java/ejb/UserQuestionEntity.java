@@ -6,12 +6,16 @@
 package ejb;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 
 @XmlRootElement
 @Entity
@@ -26,6 +30,17 @@ public class UserQuestionEntity implements Serializable {
     private Long questionID;
     private double answer;
     private boolean correct;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date attempted;
+
+    public Date getAttempted() {
+        return attempted;
+    }
+
+    @XmlElement
+    public void setAttempted(Date attempted) {
+        this.attempted = attempted;
+    }
 
     public Long getUserID() {
         return userID;

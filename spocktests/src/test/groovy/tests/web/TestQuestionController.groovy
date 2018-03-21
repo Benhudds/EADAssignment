@@ -106,8 +106,8 @@ class TestQuestionController extends spock.lang.Specification {
         given: "user logged in"
         String username = "student1"
         String password = "123"
-        String question="Calculate the area of an ellipse with x radius 8 and y radius 8"
-        String answer="201.06"
+        String question="Calculate the perimiter of a square with size 5"
+        String answer="20.0"
         
         def jwt = client.post(path: "geometryapp/login", query: [Username:username, Password:password]).getHeaders("Authorization")
         when:
@@ -116,16 +116,16 @@ class TestQuestionController extends spock.lang.Specification {
         def resp = client.post(path: "geometryapp/question", query: [Question: question, Answer: answer])
         then:
         assert resp.status == 201
-        assert resp.data.first().toString().substring(0,6).equals(answer)
-        assert resp.data.first().toString().substring(6, 7).equals("t")
+        assert resp.data.first().toString().substring(0,4).equals(answer)
+        assert resp.data.first().toString().substring(28, 29).equals("t")
     }
     
     def "post correct answer json"() {
         given: "user logged in"
         String username = "student1"
         String password = "123"
-        String question="Calculate the area of an ellipse with x radius 8 and y radius 8"
-        String answer="201.06"
+        String question="Calculate the perimiter of a square with size 5"
+        String answer="20.0"
         
         def jwt = client.post(path: "geometryapp/login", query: [Username:username, Password:password]).getHeaders("Authorization")
         when:
@@ -134,7 +134,7 @@ class TestQuestionController extends spock.lang.Specification {
         def resp = client.post(path: "geometryapp/question", query: [Question: question, Answer: answer])
         then:
         assert resp.status == 201
-        assert resp.data.answer.toString().equals(answer)
+        assert resp.data.answer.toString().equals("20")
         assert resp.data.correct.toString().equals("true")
     }
     
@@ -142,8 +142,8 @@ class TestQuestionController extends spock.lang.Specification {
         given: "user logged in"
         String username = "student1"
         String password = "123"
-        String question="Calculate the area of an ellipse with x radius 8 and y radius 8"
-        String answer="201.07"
+        String question="Calculate the perimiter of a square with size 5"
+        String answer="20.1"
         
         def jwt = client.post(path: "geometryapp/login", query: [Username:username, Password:password]).getHeaders("Authorization")
         when:
@@ -152,16 +152,16 @@ class TestQuestionController extends spock.lang.Specification {
         def resp = client.post(path: "geometryapp/question", query: [Question: question, Answer: answer])
         then:
         assert resp.status == 201
-        assert resp.data.first().toString().substring(0,6).equals(answer)
-        assert resp.data.first().toString().substring(6, 7).equals("f")
+        assert resp.data.first().toString().substring(0,4).equals(answer)
+        assert resp.data.first().toString().substring(28, 29).equals("f")
     }
     
     def "post incorrect answer json"() {
         given: "user logged in"
         String username = "student1"
         String password = "123"
-        String question="Calculate the area of an ellipse with x radius 8 and y radius 8"
-        String answer="201.07"
+        String question="Calculate the perimiter of a square with size 5"
+        String answer="20.1"
         
         def jwt = client.post(path: "geometryapp/login", query: [Username:username, Password:password]).getHeaders("Authorization")
         when:

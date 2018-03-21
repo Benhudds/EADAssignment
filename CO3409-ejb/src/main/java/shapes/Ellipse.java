@@ -73,7 +73,7 @@ public class Ellipse extends Shape {
             case AREA:
                 ret = Math.PI * xradius * yradius;
                 break;
-            case PERIMITER:
+            case PERIMETER:
                 ret = Math.PI * 2 * Math.sqrt((xradius * xradius + yradius * yradius) / 2);
                 break;
             default:

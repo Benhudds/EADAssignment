@@ -17,6 +17,7 @@ import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -107,7 +108,8 @@ public class QuestionController extends HttpServlet {
         e.setCorrect(correct);
         e.setUserID(userId);
         e.setQuestionID(questionId);
-
+        e.setAttempted(new Date());
+        
         saveEntity(e);
 
         return e;
@@ -131,14 +133,14 @@ public class QuestionController extends HttpServlet {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
         
-        saveAnswer(getQuestionId(questionString),
-                CookieHelper.GetUserIdFromCookie(request),
-                ans,
-                Question.TestAnswer(ans, q.getAnswer()));
-
         if (q == null) {
             out.println("<h3>Sorry, there was an error!</h3>");
         } else {
+            saveAnswer(getQuestionId(questionString),
+                CookieHelper.GetUserIdFromCookie(request),
+                ans,
+                Question.TestAnswer(ans, q.getAnswer()));
+            
             if (q.getAnswer() == ans) {
                 out.println("<h3>Correct! Well done. Try another question</h3>");
             } else {
@@ -165,9 +167,6 @@ public class QuestionController extends HttpServlet {
                     break;
                 }
             }
-            
-            System.out.println(q.getQuestion());
-            System.out.println(q.getAnswer());
         }
         
         return saveAnswer(q.getId(),

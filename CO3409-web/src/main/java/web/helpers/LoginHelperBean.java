@@ -82,12 +82,27 @@ public class LoginHelperBean {
     }
 
     public boolean ValidateTeacher(HttpServletRequest request) {
-        Long user = CookieHelper.GetUserIdFromCookie(request);
         UserEntity ue;
-
+        
+        String header = request.getHeader(authHeader);
+        if (header != null) {
+            System.out.println(header);
+            Claims jwt = JWTHelper.parseJWT(request.getHeader(authHeader));
+            String id = jwt.getSubject();
+            if (id != null) {
+                System.out.println(id);
+                ue = userEntityFacade.find(Long.valueOf(id));
+                if (ue != null) {
+                    return ue.isTeacher();
+                }
+            }
+        }
+        
+        Long user = CookieHelper.GetUserIdFromCookie(request);
         if (user != null) {
             ue = userEntityFacade.find(user);
             if (ue != null) {
+            System.out.println(ue.isTeacher());
                 return ue.isTeacher();
             }
         }

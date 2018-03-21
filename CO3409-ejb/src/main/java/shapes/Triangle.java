@@ -9,7 +9,6 @@ import questions.LineQuestions;
 import questions.TriangleQuestions;
 import com.ArrayUtils;
 import java.awt.Polygon;
-import static javax.swing.text.html.HTML.Tag.AREA;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import static imagehelpers.ImageHelper.MIDPOINT;
@@ -100,33 +99,13 @@ public class Triangle extends Shape {
         double ret = 0;
         switch (question) {
             case AREA:
-                int xdiff = Math.abs(getX() - x2);
-                int xsquare = xdiff * xdiff;
-                int ydiff = Math.abs(getY() - y2);
-                int ysquare = ydiff * ydiff;
-
-                double len1 = Math.sqrt(xsquare + ysquare);
-
-                xdiff = Math.abs(getX() - x3);
-                xsquare = xdiff * xdiff;
-                ydiff = Math.abs(getY() - y3);
-                ysquare = ydiff * ydiff;
-
-                double len2 = Math.sqrt(xsquare + ysquare);
-
-                xdiff = Math.abs(x2 - x3);
-                xsquare = xdiff * xdiff;
-                ydiff = Math.abs(y2 - y3);
-                ysquare = ydiff * ydiff;
-
-                double len3 = Math.sqrt(xsquare + ysquare);
-
-                if ((len1 + len2) > len3 && (len1 + len3) > len2 && (len2 + len3) > len1) {
-                    double s = (len1 + len2 + len3) / 2;
-                    ret = Math.sqrt(s * (s - len1) * (s - len2) * (s - len3));
-                }
+                double numerator = getX()*y2 + x2*y3 + x3*getY() - getY()*x2 - y2*x3 - y3*getX();
+                
+                ret = Math.abs(numerator / 2);
+                
                 break;
 
+                
             case PERIMETER:
                 Line line1 = new Line(getX(), getY(), x2, y2);
                 Line line2 = new Line(getX(), getY(), x3, y3);

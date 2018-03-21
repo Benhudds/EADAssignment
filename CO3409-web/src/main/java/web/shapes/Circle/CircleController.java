@@ -48,9 +48,6 @@ public class CircleController extends HttpServlet {
                     if (shapeParams.isValid()) {
                         h = new CircleHelper();
                         ((CircleHelper) h).Draw((Circle) shapeParams.getShape());
-                        response.setContentType("image/jpeg");
-                        ServletOutputStream sos = response.getOutputStream();
-                        ImageIO.write(h, "jpeg", sos);
                     } else {
                         h = new ImageHelper();
                         h.CreateAxis();

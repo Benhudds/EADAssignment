@@ -24,6 +24,7 @@ class TestMarkController extends spock.lang.Specification {
         when:
         def resp = client.post(path: "geometryapp/marks")
         then:
+        System.out.println(resp.getContext().toString())
         assert resp.status == 302
     }
     
@@ -49,7 +50,7 @@ class TestMarkController extends spock.lang.Specification {
         def jwt = client.post(path: "geometryapp/login", query: [Username:username, Password:password]).getHeaders("Authorization")
         when:
         client.setHeaders([Authorization: jwt.value.first()])
-        def resp = client.post(path: "geometryapp/marks")
+        def resp = client.get(path: "geometryapp/marks")
         then:
         // Not redirected when valid
         assert resp.status == 200
@@ -99,7 +100,7 @@ class TestMarkController extends spock.lang.Specification {
         when:
         client.setContentType("application/xml")
         client.setHeaders([Authorization: jwt.value.first()])
-        def resp = client.post(path: "geometryapp/marks")
+        def resp = client.get(path: "geometryapp/marks")
         then:
         // Not redirected when valid
         assert resp.status == 200
@@ -150,7 +151,7 @@ class TestMarkController extends spock.lang.Specification {
         when:
         client.setContentType("application/json")
         client.setHeaders([Authorization: jwt.value.first()])
-        def resp = client.post(path: "geometryapp/marks")
+        def resp = client.get(path: "geometryapp/marks")
         then:
         // Not redirected when valid
         assert resp.status == 200
@@ -187,7 +188,7 @@ class TestMarkController extends spock.lang.Specification {
         def jwt = client.post(path: "geometryapp/login", query: [Username:username, Password:password]).getHeaders("Authorization")
         when:
         client.setHeaders([Authorization: jwt.value.first()])
-        def resp = client.post(path: "geometryapp/marks/1")
+        def resp = client.get(path: "geometryapp/marks/1")
         then:
         // Not redirected when valid
         assert resp.status == 200
@@ -237,7 +238,7 @@ class TestMarkController extends spock.lang.Specification {
         when:
         client.setContentType("application/xml")
         client.setHeaders([Authorization: jwt.value.first()])
-        def resp = client.post(path: "geometryapp/marks/1")
+        def resp = client.get(path: "geometryapp/marks/1")
         then:
         // Not redirected when valid
         assert resp.status == 200
@@ -288,7 +289,7 @@ class TestMarkController extends spock.lang.Specification {
         when:
         client.setContentType("application/json")
         client.setHeaders([Authorization: jwt.value.first()])
-        def resp = client.post(path: "geometryapp/marks/1")
+        def resp = client.get(path: "geometryapp/marks/1")
         then:
         // Not redirected when valid
         assert resp.status == 200
