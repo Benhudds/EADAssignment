@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import web.ServletBase;
 import web.helpers.LoginHelperBean;
 
 @WebFilter(filterName = "TeacherFilter", urlPatterns = {"/marks/*", "/users/*", "/marks", "/users"})

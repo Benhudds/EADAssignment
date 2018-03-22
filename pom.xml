@@ -11,5 +11,8 @@
     <module>CO3409-web</module>
     <module>CO3409-ejb</module>
     <module>spocktests</module>
+    <module>CO3409-draw</module>
+    <module>CO3409-questions</module>
+    <module>CO3409-marks</module>
   </modules>
 </project>

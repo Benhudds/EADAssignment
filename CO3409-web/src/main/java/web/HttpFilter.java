@@ -22,6 +22,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import web.ServletBase;
+import web.UnfilteredUrls;
 import web.helpers.LoginHelperBean;
 
 @WebFilter(filterName = "HttpFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})

@@ -37,13 +37,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 import web.ServletBase;
 import web.helpers.LoginHelperBean;
-import web.marks.MarkController;
 
 @WebServlet(name = "UserController", urlPatterns = {"/users/*"})
 public class UserController extends HttpServlet {
 
     private final static String[] paramNames = {"Teacher", "Password", "UserName", "LastName", "FirstName"};
-    public final static String teacherParam = "Teacher";
 
     @Resource(mappedName = "jms/__defaultConnectionFactory")
     private ConnectionFactory connectionFactory;
@@ -155,7 +153,7 @@ public class UserController extends HttpServlet {
 
             ServletBase.EndBody(out);
         } catch (URISyntaxException ex) {
-            Logger.getLogger(MarkController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
